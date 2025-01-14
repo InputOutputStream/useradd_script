@@ -7,13 +7,13 @@ This script automates the process of creating a new user, setting a default pass
 Before running the script, ensure the following:
 
 - You have superuser (root) privileges to run the script and modify system files.
-- The `quota` package is installed on your system. If not, the script will automatically install it.
+- The `quota` package is installed on your system. If not, the script will automatically install it using the apt package manager so if you are on an arch base or on fedora use your best package manager to install it before running the script.
 - The system is using **ext4** as the filesystem for the root partition (`/`).
 
 ## Usage
 
 ```bash
-./create_user.sh <username> <comment> <default_shell> <validity_days>
+./create_user.sh <username> <comment> <default_shell> <validity_days> <quota>
 
 ```
 
@@ -22,9 +22,10 @@ Before running the script, ensure the following:
 <comment>: A description for the user (e.g. "Adama").
 <default_shell>: The default shell for the user (e.g., /bin/bash).
 <validity_days>: The number of days until the user account expires.
+<quota>: Disk usage quota
 
 ## Exemple
-```./create_user.sh Adama "je suis Adama" /bin/bash 10```
+```./create_user.sh Adama "je suis Adama" /bin/bash 10 2```
 
 This command will create a user adama with the comment "je suis Adama", the default shell /bin/bash, and the account will expire in 10 days.
 
