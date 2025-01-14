@@ -22,7 +22,7 @@ Before running the script, ensure the following:
 <comment>: A description for the user (e.g. "Adama").
 <default_shell>: The default shell for the user (e.g., /bin/bash).
 <validity_days>: The number of days until the user account expires.
-<quota>: Disk usage quota
+<quota>: Disk usage quota in ```Go``` e.g ```2```
 
 ## Exemple
 ```./create_user.sh Adama "je suis Adama" /bin/bash 10 2```

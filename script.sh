@@ -60,8 +60,8 @@ if [ "$EUID" -ne 0 ]; then
 fi
 
 # Check if all arguments are provided
-if [ "$#" -ne 4 ]; then
-    echo "Usage: $0 <username> <comment> <default_shell> <validity_days>"
+if [ "$#" -ne 5 ]; then
+    echo "Usage: $0 <username> <comment> <default_shell> <validity_days> <quota>"
     exit 1
 fi
 
@@ -120,6 +120,6 @@ echo "Time-based login restriction configured successfully for user: $username"
 # Final message
 echo "User $USERNAME created successfully!"
 echo "Password: $PASS"
-echo "Quota: 2 GB"
+echo "Quota: $DISQUE GB"
 echo "Valid for: $EXP_DAYS days"
 echo "Login hours: 8:00 AM - 6:00 PM (Mon-Fri)"
