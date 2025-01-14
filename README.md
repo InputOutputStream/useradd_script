@@ -28,6 +28,8 @@ Before running the script, ensure the following:
 
 This command will create a user adama with the comment "je suis Adama", the default shell /bin/bash, and the account will expire in 10 days.
 
+After the execution of the script a reboot will be necessary for the os take account of all the changes made, so you are advised to ```reboot the system```
+
 
 ## Features
 
@@ -49,13 +51,28 @@ The login restrictions are applied by modifying /etc/security/time.conf.
 ## Sample Output
 
 Enabling quota in /etc/fstab...
+Quota options already present in /etc/fstab.
+Remounting root filesystem...
 Initializing and enabling quotas...
-Creating user adama...
-Setting quota for adama...
-Configuring login time restrictions...
-User jdoe created successfully!
+quotacheck: Quota for users is enabled on mountpoint / so quotacheck might damage the file.
+Please turn quotas off or use -f to force checking.
+quotaon: Your kernel probably supports ext4 quota feature but you are using external quota files. Please switch your filesystem to use ext4 quota feature as external quota files on ext4 are deprecated.
+quotaon: cannot find //aquota.group on /dev/vda3 [/]
+quotaon: using //aquota.user on /dev/vda3 [/]: Device or resource busy
+Creating user Jabana...
+BAD PASSWORD: The password is shorter than 8 characters
+Setting quota for Jabana...
+Configuring PAM for login time restrictions...
+Configuring time restrictions for user: Jabana
+Time restriction rule updated in /etc/security/time.conf.
+Updating PAM configuration in /etc/pam.d/sshd
+PAM configuration updated.
+Restarting SSH service to apply changes.
+Failed to restart sshd.service: Unit sshd.service not found.
+SSH service restarted.
+Time-based login restriction configured successfully for user: 
+User Jabana created successfully!
 Password: inf3611
 Quota: 2 GB
-Valid for: 30 days
-Login hours: 8:00 - 18:00
-
+Valid for: 10 days
+Login hours: 8:00 AM - 6:00 PM (Mon-Fri)

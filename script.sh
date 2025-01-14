@@ -7,9 +7,54 @@ EXP_DAYS=$4
 PASS="inf3611"
 QUOTA=$((2*1024*1024)) # 2GB in KB
 
+
+
+# Function to modify /etc/security/time.conf
+configure_time_restriction() {
+    local username="$1"
+    local start_time="$2"
+    local end_time="$3"
+
+    echo "Configuring time restrictions for user: $username"
+    
+    # Add or update the time restriction rule in /etc/security/time.conf
+    rule="sshd;*;$username;Al${start_time}-${end_time}"
+    if grep -q "^sshd;.*;$username;" /etc/security/time.conf; then
+        # Update existing rule
+        sed -i "s/^sshd;.*;$username;.*/$rule/" /etc/security/time.conf
+    else
+        # Add new rule
+        echo "$rule" >> /etc/security/time.conf
+    fi
+
+    echo "Time restriction rule updated in /etc/security/time.conf."
+}
+
+# Function to update PAM configuration for SSH
+configure_pam_sshd() {
+    local pam_config="/etc/pam.d/sshd"
+
+    echo "Updating PAM configuration in $pam_config"
+    
+    # Check if the PAM rule is already present
+    if ! grep -q "^account required pam_exec.so" "$pam_config"; then
+        echo "account required pam_exec.so /usr/bin/test -r /etc/security/time.conf" >> "$pam_config"
+    fi
+
+    echo "PAM configuration updated."
+}
+
+# Function to restart SSH service
+restart_ssh_service() {
+    echo "Restarting SSH service to apply changes."
+    systemctl restart sshd
+    echo "SSH service restarted."
+}
+
+
 # Check if running as root
 if [ "$EUID" -ne 0 ]; then
-    echo "Please run this script as root."
+    echo "Please run this script with privileges."
     exit 1
 fi
 
@@ -58,16 +103,22 @@ sudo chage -d 0 "$USERNAME"
 echo "Setting quota for $USERNAME..."
 sudo setquota -u "$USERNAME" $QUOTA $QUOTA 0 0 /
 
-# Configure login time restrictions (8:00 - 18:00)
-echo "Configuring login time restrictions..."
-LOGIN_TIME_RULE="adama;*;!Wk0800-1800" # Restricts logins outside Mon-Fri 8:00-18:00
-if ! grep -q "$LOGIN_TIME_RULE" /etc/security/time.conf; then
-    echo "$LOGIN_TIME_RULE" | sudo tee -a /etc/security/time.conf
-fi
+# Configure login time restrictions via PAM
+echo "Configuring PAM for login time restrictions..."
+start_time=0800
+end_time=1800 # Restricts logins outside Mon-Fri 8:00-18:00
+
+
+configure_time_restriction "$USERNAME" "$start_time" "$end_time"
+configure_pam_sshd
+restart_ssh_service
+
+echo "Time-based login restriction configured successfully for user: $username"
+
 
 # Final message
 echo "User $USERNAME created successfully!"
 echo "Password: $PASS"
 echo "Quota: 2 GB"
 echo "Valid for: $EXP_DAYS days"
-echo "Login hours: 8:00 - 18:00"
+echo "Login hours: 8:00 AM - 6:00 PM (Mon-Fri)"
